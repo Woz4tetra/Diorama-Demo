@@ -5,6 +5,7 @@ public class PlayerManager : MonoBehaviour
     private PlayerLocomotion playerLocomotion;
     private AnimatorManager animatorManager;
     private InputManager inputManager;
+    [SerializeField] private CameraManager cameraManager;
 
     void Awake()
     {
@@ -21,5 +22,11 @@ public class PlayerManager : MonoBehaviour
     void FixedUpdate()
     {
         playerLocomotion.HandleAllMovement(inputManager.getMovement());
+    }
+
+    // This is called after the frame is finished rendering
+    void LateUpdate()
+    {
+        cameraManager.HandleAllMovement(inputManager.getCameraRotation());
     }
 }
