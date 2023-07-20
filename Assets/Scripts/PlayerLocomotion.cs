@@ -3,18 +3,30 @@ using UnityEngine;
 public class PlayerLocomotion : MonoBehaviour
 {
 
+    [Header("Movement")]
     [SerializeField] private float movementSpeed = 1.0f;
     [SerializeField] private float rotationSpeed = 1.0f;
+
+    [Header("Falling")]
+    [SerializeField] private float levelMaxHeight = 100.0f;
+    [SerializeField] private float leapingVelocity = 1.0f;
+    [SerializeField] private float leapingTime = 0.5f;
+    [SerializeField] LayerMask groundLayer;  // The layers the camera will collide with
+    [SerializeField] private float isFallingThreshold = 0.02f;
     private float epsilon = 1e-6f;
+    private bool isFalling = false;
+    private float inAirTimer = 0.0f;
 
 
     private Rigidbody playerRigidBody;
     private Vector3 moveDirection;
     private Transform cameraObject;
+    private CapsuleCollider playerCollider;
 
     private void Awake()
     {
         playerRigidBody = GetComponent<Rigidbody>();
+        playerCollider = GetComponent<CapsuleCollider>();
         cameraObject = Camera.main.transform;  // search for main camera in scene
     }
 
@@ -22,6 +34,7 @@ public class PlayerLocomotion : MonoBehaviour
     {
         HandleVelocity(movementVector);
         HandleRotation(movementVector);
+        HandleFalling();
     }
 
     private void HandleVelocity(MovementVector movementVector)
@@ -45,6 +58,25 @@ public class PlayerLocomotion : MonoBehaviour
         setPlayerRotation(playerRotation);
     }
 
+    private void HandleFalling()
+    {
+        float groundDistance = GroundDistance();
+        if (groundDistance > isFallingThreshold)
+        {
+            isFalling = true;
+            inAirTimer += Time.deltaTime;
+            if (inAirTimer < leapingTime)
+            {
+                playerRigidBody.AddForce(Vector3.down * leapingVelocity, ForceMode.Impulse);
+            }
+        }
+        else
+        {
+            inAirTimer = 0.0f;
+            isFalling = false;
+        }
+    }
+
     private Vector3 getPlayerForwardDirection()
     {
         return transform.forward;
@@ -62,7 +94,10 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void setPlayerVelocity(Vector3 movementVelocity)
     {
-        playerRigidBody.velocity = movementVelocity;
+        Vector3 velocity = playerRigidBody.velocity;
+        velocity.x = movementVelocity.x;
+        velocity.z = movementVelocity.z;
+        playerRigidBody.velocity = velocity;
     }
 
     private Vector3 getMovementDirection(MovementVector movementVector)
@@ -93,5 +128,22 @@ public class PlayerLocomotion : MonoBehaviour
         cameraMovementDirection.x = cameraDirection.x;
         cameraMovementDirection.z = cameraDirection.z;
         return cameraMovementDirection;
+    }
+
+    private float GroundDistance()
+    {
+        RaycastHit hit;
+        Vector3 raycastOrigin = transform.position;
+        raycastOrigin.y += playerCollider.height;
+        if (Physics.SphereCast(raycastOrigin, playerCollider.radius, Vector3.down, out hit, levelMaxHeight, groundLayer))
+        {
+            return hit.distance -= playerCollider.height - playerCollider.radius;
+        }
+        return 0.0f;
+    }
+
+    public bool IsFalling()
+    {
+        return isFalling;
     }
 }

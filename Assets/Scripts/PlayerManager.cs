@@ -23,13 +23,14 @@ public class PlayerManager : MonoBehaviour
             movement = inputManager.GetMovement();
         }
         animatorManager.UpdateAnimatorValues(movement);
+        animatorManager.UpdateInteracting(playerLocomotion.IsFalling());
         SetCursorLock(!ShouldPaused());
     }
 
     void FixedUpdate()
     {
         MovementVector movement = MovementVector.zero;
-        if (!ShouldPaused())
+        if (!ShouldPaused() && animatorManager.AllowMovement())
         {
             movement = inputManager.GetMovement();
         }
