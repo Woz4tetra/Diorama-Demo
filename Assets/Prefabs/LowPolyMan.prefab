@@ -100,6 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a97ffb3d81988e3d98e3323d62f65587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  runSpeedMultiplier: 2.1
+  minRunMagnitude: 0.4
 --- !u!114 &249024408557857553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,6 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc250af4b77962d3ab6990bb05dfd45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraManager: {fileID: 0}
 --- !u!114 &7028677235603684965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +187,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.2
+  m_Radius: 0.25
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.88439083, z: 0}

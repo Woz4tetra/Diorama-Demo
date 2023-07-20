@@ -18,7 +18,7 @@ public class AnimatorManager : MonoBehaviour
 
     public void UpdateAnimatorValues(MovementVector movementVector)
     {
-        float moveAmount = Mathf.Clamp01(Mathf.Abs(movementVector.horizontal) + Mathf.Abs(movementVector.vertical));
+        float moveAmount = movementVector.magnitude();
         float horizontalValue = moveAmount;
         float verticalValue = 0.0f;  // TODO: add strafing
         animator.SetFloat(horizontalAnimation, getSnapped(horizontalValue), dampingTime, Time.deltaTime);
@@ -35,7 +35,7 @@ public class AnimatorManager : MonoBehaviour
         }
         else if (movementValue > snapThreshold)
         {
-            snapped = 1.0f;
+            snapped = Mathf.Abs(movementValue);
         }
         else if (movementValue < 0 && movementValue > -snapThreshold)
         {
@@ -43,7 +43,7 @@ public class AnimatorManager : MonoBehaviour
         }
         else if (movementValue < -snapThreshold)
         {
-            snapped = -1.0f;
+            snapped = -Mathf.Abs(movementValue);
         }
         else
         {

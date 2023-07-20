@@ -3,10 +3,8 @@ using UnityEngine;
 public class PlayerLocomotion : MonoBehaviour
 {
 
-    [SerializeField]
-    private float movementSpeed = 1.0f;
-    [SerializeField]
-    private float rotationSpeed = 1.0f;
+    [SerializeField] private float movementSpeed = 1.0f;
+    [SerializeField] private float rotationSpeed = 1.0f;
     private float epsilon = 1e-6f;
 
 
@@ -29,7 +27,7 @@ public class PlayerLocomotion : MonoBehaviour
     private void HandleVelocity(MovementVector movementVector)
     {
         Vector3 movementVelocity = getMovementDirection(movementVector);
-        movementVelocity *= movementSpeed;
+        movementVelocity *= movementSpeed * movementVector.magnitude();
         setPlayerVelocity(movementVelocity);
     }
 
