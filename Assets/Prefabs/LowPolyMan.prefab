@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a97ffb3d81988e3d98e3323d62f65587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runSpeedMultiplier: 2.1
+  runSpeedMultiplier: 2
   minRunMagnitude: 0.4
 --- !u!114 &249024408557857553
 MonoBehaviour:
@@ -130,12 +130,13 @@ MonoBehaviour:
   movementSpeed: 5
   rotationSpeed: 15
   levelMaxHeight: 100
-  leapingVelocity: 20
+  leapingMagnitude: 20
+  jumpingMagnitude: 400
   leapingTime: 0.5
   groundLayer:
     serializedVersion: 2
-    m_Bits: 64
-  isFallingThreshold: 0.1
+    m_Bits: 65
+  isFallingThreshold: 0.25
 --- !u!114 &8880013651525285066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +196,6 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.25
-  m_Height: 1.8
+  m_Height: 1.78
   m_Direction: 1
-  m_Center: {x: 0, y: 0.88439083, z: 0}
+  m_Center: {x: 0, y: 0.88, z: 0}

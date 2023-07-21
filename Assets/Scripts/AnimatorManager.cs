@@ -13,6 +13,7 @@ public class AnimatorManager : MonoBehaviour
 
     private enum AnimationState
     {
+        JUMPING,
         MOVEMENT,
         FALLING,
         LAND
@@ -36,28 +37,32 @@ public class AnimatorManager : MonoBehaviour
         animator.SetFloat(verticalAnimation, getSnapped(verticalValue), dampingTime, Time.deltaTime);
     }
 
-    public void UpdateInteracting(bool isFalling)
+    public void UpdateInteracting(bool isFalling, bool isJumping)
     {
-        if (isFalling && !IsInteracting())
+        if (isJumping && !IsInteracting())
+        {
+            PlayTargetAnimation("Jump", true);
+            animationState = AnimationState.JUMPING;
+        }
+
+        if ((animationState == AnimationState.JUMPING || isFalling) && !IsInteracting())
         {
             // This will will set IsInteracting to true
             PlayTargetAnimation("Falling", true);
             animationState = AnimationState.FALLING;
-            Debug.Log("falling");
         }
         if (wasFalling != isFalling && !isFalling && animationState == AnimationState.FALLING)
         {
             PlayTargetAnimation("Land", true);
             animationState = AnimationState.LAND;
-            Debug.Log("land");
         }
         if (animationState == AnimationState.LAND && !IsInteracting())
         {
             animationState = AnimationState.MOVEMENT;
-            Debug.Log("movement");
         }
         wasFalling = isFalling;
     }
+
 
     private float getSnapped(float movementValue)
     {
@@ -102,6 +107,10 @@ public class AnimatorManager : MonoBehaviour
 
     public bool AllowMovement()
     {
-        return animationState == AnimationState.MOVEMENT || animationState == AnimationState.FALLING;
+        return (
+            animationState == AnimationState.MOVEMENT ||
+            animationState == AnimationState.FALLING ||
+            animationState == AnimationState.JUMPING
+        );
     }
 }

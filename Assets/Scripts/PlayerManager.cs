@@ -23,18 +23,20 @@ public class PlayerManager : MonoBehaviour
             movement = inputManager.GetMovement();
         }
         animatorManager.UpdateAnimatorValues(movement);
-        animatorManager.UpdateInteracting(playerLocomotion.IsFalling());
+        animatorManager.UpdateInteracting(playerLocomotion.GetIsFalling(), playerLocomotion.GetIsJumping());
         SetCursorLock(!ShouldPaused());
     }
 
     void FixedUpdate()
     {
         MovementVector movement = MovementVector.zero;
+        bool shouldJump = false;
         if (!ShouldPaused() && animatorManager.AllowMovement())
         {
             movement = inputManager.GetMovement();
+            shouldJump = inputManager.GetShouldPlayerJump();
         }
-        playerLocomotion.HandleAllMovement(movement);
+        playerLocomotion.HandleAllMovement(movement, shouldJump);
     }
 
     // This is called after the frame is finished rendering

@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour
     private Vector2 cameraRotationInput;
     private bool shouldPause = false;
     private bool shouldPlayerRun = false;
+    private bool shouldPlayerJump = false;
     [SerializeField] private float runSpeedMultiplier = 2.0f;
     [SerializeField] private float minRunMagnitude = 0.4f;
 
@@ -27,7 +28,11 @@ public class InputManager : MonoBehaviour
             playerControls.PlayerMovement.Pause.performed += i => shouldPause = !shouldPause;
 
             // Add lambda function callback to .performed that sets shouldPlayerRun when the run button is held
-            playerControls.PlayerMovement.RunToggle.performed += i => shouldPlayerRun = i.ReadValue<float>() > 0.5 ? true : false;
+            playerControls.PlayerMovement.RunToggle.performed += i => shouldPlayerRun = true;
+            playerControls.PlayerMovement.RunToggle.canceled += i => shouldPlayerRun = false;
+
+            // Add lambda function callback to .performed that sets shouldPlayerRun when the jump button is held
+            playerControls.PlayerMovement.Jump.performed += i => shouldPlayerJump = true;
         }
         playerControls.Enable();
     }
@@ -58,5 +63,12 @@ public class InputManager : MonoBehaviour
     public bool GetShouldPause()
     {
         return shouldPause;
+    }
+
+    public bool GetShouldPlayerJump()
+    {
+        bool result = shouldPlayerJump;
+        shouldPlayerJump = false;
+        return result;
     }
 }

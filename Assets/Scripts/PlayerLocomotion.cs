@@ -9,13 +9,15 @@ public class PlayerLocomotion : MonoBehaviour
 
     [Header("Falling")]
     [SerializeField] private float levelMaxHeight = 100.0f;
-    [SerializeField] private float leapingVelocity = 1.0f;
+    [SerializeField] private float leapingMagnitude = 1.0f;
+    [SerializeField] private float jumpingMagnitude = 1.0f;
     [SerializeField] private float leapingTime = 0.5f;
     [SerializeField] LayerMask groundLayer;  // The layers the camera will collide with
     [SerializeField] private float isFallingThreshold = 0.02f;
     private float epsilon = 1e-6f;
     private bool isFalling = false;
     private float inAirTimer = 0.0f;
+    private bool isJumping = false;
 
 
     private Rigidbody playerRigidBody;
@@ -30,11 +32,12 @@ public class PlayerLocomotion : MonoBehaviour
         cameraObject = Camera.main.transform;  // search for main camera in scene
     }
 
-    public void HandleAllMovement(MovementVector movementVector)
+    public void HandleAllMovement(MovementVector movementVector, bool shouldJump)
     {
         HandleVelocity(movementVector);
         HandleRotation(movementVector);
         HandleFalling();
+        HandleJumping(shouldJump);
     }
 
     private void HandleVelocity(MovementVector movementVector)
@@ -67,13 +70,26 @@ public class PlayerLocomotion : MonoBehaviour
             inAirTimer += Time.deltaTime;
             if (inAirTimer < leapingTime)
             {
-                playerRigidBody.AddForce(Vector3.down * leapingVelocity, ForceMode.Impulse);
+                playerRigidBody.AddForce(Vector3.down * leapingMagnitude, ForceMode.Impulse);
             }
         }
         else
         {
             inAirTimer = 0.0f;
             isFalling = false;
+        }
+    }
+
+    private void HandleJumping(bool shouldJump)
+    {
+        if (shouldJump && !isFalling)
+        {
+            isJumping = true;
+            playerRigidBody.AddForce(Vector3.up * jumpingMagnitude, ForceMode.Impulse);
+        }
+        else
+        {
+            isJumping = false;
         }
     }
 
@@ -98,6 +114,7 @@ public class PlayerLocomotion : MonoBehaviour
         velocity.x = movementVelocity.x;
         velocity.z = movementVelocity.z;
         playerRigidBody.velocity = velocity;
+        // playerRigidBody.AddForce(movementVelocity * 0.2f, ForceMode.VelocityChange);
     }
 
     private Vector3 getMovementDirection(MovementVector movementVector)
@@ -135,15 +152,20 @@ public class PlayerLocomotion : MonoBehaviour
         RaycastHit hit;
         Vector3 raycastOrigin = transform.position;
         raycastOrigin.y += playerCollider.height;
-        if (Physics.SphereCast(raycastOrigin, playerCollider.radius, Vector3.down, out hit, levelMaxHeight, groundLayer))
+        if (Physics.SphereCast(raycastOrigin, playerCollider.radius / 2, Vector3.down, out hit, levelMaxHeight, groundLayer))
         {
-            return hit.distance -= playerCollider.height - playerCollider.radius;
+            return hit.distance -= playerCollider.height - playerCollider.radius / 2;
         }
-        return 0.0f;
+        return 100.0f;
     }
 
-    public bool IsFalling()
+    public bool GetIsFalling()
     {
         return isFalling;
+    }
+
+    public bool GetIsJumping()
+    {
+        return isJumping;
     }
 }
